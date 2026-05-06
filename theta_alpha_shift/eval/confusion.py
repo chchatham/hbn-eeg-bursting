@@ -51,7 +51,7 @@ def _get_method_runner(method_name):
 
 
 def run_evaluation_grid(method_names=None, ages=None, n_trials=10, seed=42,
-                        verbose=True):
+                        verbose=True, method_kwargs=None):
     """Run methods across all regimes and ages.
 
     Parameters
@@ -66,6 +66,8 @@ def run_evaluation_grid(method_names=None, ages=None, n_trials=10, seed=42,
         Base random seed.
     verbose : bool
         Print progress.
+    method_kwargs : dict, optional
+        Per-method keyword arguments, e.g. {"specparam_baseline": {"psd_method": "meeglet"}}.
 
     Returns
     -------
@@ -75,6 +77,8 @@ def run_evaluation_grid(method_names=None, ages=None, n_trials=10, seed=42,
         method_names = list(METHOD_RUNNERS.keys())
     if ages is None:
         ages = [5, 8, 11, 14, 17, 20]
+    if method_kwargs is None:
+        method_kwargs = {}
 
     results = []
     total = len(method_names) * len(REGIME_NAMES) * len(ages) * n_trials
@@ -84,9 +88,12 @@ def run_evaluation_grid(method_names=None, ages=None, n_trials=10, seed=42,
 
     for method_name in method_names:
         run_fn = runners[method_name]
+        kwargs = method_kwargs.get(method_name, {})
         if verbose:
             print(f"{'=' * 60}")
             print(f"Method: {method_name}")
+            if kwargs:
+                print(f"  kwargs: {kwargs}")
 
         for regime_name in REGIME_NAMES:
             sim_fn = REGIME_FUNCS[regime_name]
@@ -99,7 +106,7 @@ def run_evaluation_grid(method_names=None, ages=None, n_trials=10, seed=42,
                     epoch = sim_fn(age=age, rng=rng)
 
                     try:
-                        method_result = run_fn(epoch)
+                        method_result = run_fn(epoch, **kwargs)
                         stat = method_result.headline_stat
                         stat_name = method_result.headline_stat_name
                         meta = {

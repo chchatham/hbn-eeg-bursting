@@ -10,6 +10,7 @@ specparam==2.0.0rc6
 bycycle==1.2.0
 emd==0.8.1
 hmmlearn==0.3.3
+meeglet==0.0.1
 scikit-learn==1.8.0
 PyYAML==6.0.3
 tqdm==4.67.3

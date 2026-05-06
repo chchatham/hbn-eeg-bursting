@@ -10,10 +10,6 @@ The headline discriminative statistic is mean_period_slope: the average signed
 slope of consecutive period values within detected bursts. Chirp bursts produce
 systematically changing periods (positive or negative slope), while constant-
 frequency bursts produce near-zero slope.
-
-Usage:
-    from theta_alpha_shift.methods.bycycle_wrap import run_bycycle
-    result = run_bycycle(epoch)
 """
 
 import numpy as np

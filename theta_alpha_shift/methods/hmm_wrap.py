@@ -9,14 +9,11 @@ The headline discriminative statistic is n_oscillatory_states: the number of
 HMM states whose per-state spectrum has a clear peak in 4-12 Hz. Mixture
 (Hypothesis B) should produce 2 distinct oscillatory states (theta + alpha),
 while chirp (Hypothesis A) should produce 1 broadband oscillatory state.
-
-Usage:
-    from theta_alpha_shift.methods.hmm_wrap import run_hmm
-    result = run_hmm(epoch)
 """
 
 import numpy as np
 from scipy.signal import welch
+from hmmlearn.hmm import GaussianHMM
 
 from theta_alpha_shift.methods import MethodResult
 
@@ -87,8 +84,6 @@ def _fit_hmm(X, n_states, n_iter=100, seed=42):
     model : GaussianHMM
     bic : float
     """
-    from hmmlearn.hmm import GaussianHMM
-
     model = GaussianHMM(
         n_components=n_states,
         covariance_type="diag",

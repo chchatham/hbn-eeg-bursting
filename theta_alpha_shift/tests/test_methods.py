@@ -92,6 +92,28 @@ class TestSpecparamBaseline:
         assert not np.isnan(result.metadata["peak_freq_hz"])
         assert 4.0 <= result.metadata["peak_freq_hz"] <= 12.0
 
+    def test_psd_method_metadata(self):
+        from theta_alpha_shift.methods.specparam_baseline import run_specparam
+        epoch, _ = self._make_epochs()
+        rw = run_specparam(epoch, psd_method="welch")
+        assert rw.metadata["psd_method"] == "welch"
+        assert rw.metadata["freqs_raw"] is None
+
+    def test_meeglet_psd_method(self):
+        from theta_alpha_shift.methods.specparam_baseline import run_specparam
+        epoch, _ = self._make_epochs()
+        result = run_specparam(epoch, psd_method="meeglet")
+        assert isinstance(result, MethodResult)
+        assert result.metadata["psd_method"] == "meeglet"
+        assert result.metadata["freqs_raw"] is not None
+        assert result.metadata["psd_raw"] is not None
+
+    def test_meeglet_tuple_input(self):
+        from theta_alpha_shift.methods.specparam_baseline import run_specparam
+        epoch, _ = self._make_epochs()
+        result = run_specparam((epoch.data, epoch.sfreq), psd_method="meeglet")
+        assert isinstance(result, MethodResult)
+
 
 class TestBycycleWrap:
     def _make_epoch(self):

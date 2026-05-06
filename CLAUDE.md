@@ -76,7 +76,7 @@ theta_alpha_shift/
 │   └── params.py              # developmental parameter curves (Freschl PAF, Cellier exponent)
 ├── methods/
 │   ├── init.py
-│   ├── specparam_baseline.py  # meeglet-PSD + specparam wrapper
+│   ├── specparam_baseline.py  # PSD + specparam wrapper (Welch in Stage 1; migrate to meeglet for Stage 2)
 │   ├── threshold_bursts.py    # fBOSC / PAPTO wrapper
 │   ├── bycycle_wrap.py        # bycycle with relaxed thresholds + chirp statistics
 │   ├── itemd_if.py            # itEMD + within-cycle IF wrapper

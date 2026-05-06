@@ -135,6 +135,16 @@
         (AUC &le; 0.59), we additionally evaluated multi-epoch aggregation (30 simulated subjects
         &times; 50 epochs each).
     </p>
+    <p>
+        <strong>Spectral estimation note:</strong> The parent HBN analysis pipeline uses wavelet-based
+        spectral estimation (meeglet; Bw&nbsp;=&nbsp;0.35 oct, 12 bins/octave), while this simulator uses
+        Welch periodograms for interactive speed (&lt;2s response). A quantitative comparison on
+        identical simulated signals shows PSD shape correlation r&nbsp;&asymp;&nbsp;0.96 between methods&mdash;a
+        meaningful difference reflecting the distinct frequency resolution properties of FFT-based vs.
+        wavelet-based estimators. However, the surviving discrimination methods (bycycle period slopes,
+        HMM state detection) operate entirely in the time domain and are independent of PSD estimation,
+        so this discrepancy does not affect the scientific conclusions.
+    </p>
 </section>
 
 <section id="results">

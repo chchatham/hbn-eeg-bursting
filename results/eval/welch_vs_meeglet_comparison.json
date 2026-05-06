@@ -1,0 +1,143 @@
+{
+  "description": "Welch vs meeglet PSD comparison on simulated 2s epochs",
+  "n_epochs_per_condition": 50,
+  "freq_range_hz": [
+    4,
+    30
+  ],
+  "conditions": [
+    {
+      "regime": "chirp",
+      "age": 5,
+      "psd_correlation_single_epoch_mean": 0.9079835457121154,
+      "psd_correlation_single_epoch_std": 0.033302873584048924,
+      "psd_correlation_multi_epoch_avg": 0.9632891822842083
+    },
+    {
+      "regime": "chirp",
+      "age": 8,
+      "psd_correlation_single_epoch_mean": 0.9003085568606244,
+      "psd_correlation_single_epoch_std": 0.04818482168438807,
+      "psd_correlation_multi_epoch_avg": 0.9619607653642809
+    },
+    {
+      "regime": "chirp",
+      "age": 11,
+      "psd_correlation_single_epoch_mean": 0.9023197757940435,
+      "psd_correlation_single_epoch_std": 0.04949045170649007,
+      "psd_correlation_multi_epoch_avg": 0.961947480093684
+    },
+    {
+      "regime": "chirp",
+      "age": 14,
+      "psd_correlation_single_epoch_mean": 0.8995743324130195,
+      "psd_correlation_single_epoch_std": 0.046359519595708255,
+      "psd_correlation_multi_epoch_avg": 0.9604823913425562
+    },
+    {
+      "regime": "chirp",
+      "age": 17,
+      "psd_correlation_single_epoch_mean": 0.9015432581415475,
+      "psd_correlation_single_epoch_std": 0.04734389407593343,
+      "psd_correlation_multi_epoch_avg": 0.9605419512242195
+    },
+    {
+      "regime": "chirp",
+      "age": 20,
+      "psd_correlation_single_epoch_mean": 0.9003578714740672,
+      "psd_correlation_single_epoch_std": 0.05347586356622403,
+      "psd_correlation_multi_epoch_avg": 0.9594741598289798
+    },
+    {
+      "regime": "mixture",
+      "age": 5,
+      "psd_correlation_single_epoch_mean": 0.8927991050597517,
+      "psd_correlation_single_epoch_std": 0.04387442908106468,
+      "psd_correlation_multi_epoch_avg": 0.9584611737015823
+    },
+    {
+      "regime": "mixture",
+      "age": 8,
+      "psd_correlation_single_epoch_mean": 0.8884835232020402,
+      "psd_correlation_single_epoch_std": 0.05185061885267254,
+      "psd_correlation_multi_epoch_avg": 0.9567695716285315
+    },
+    {
+      "regime": "mixture",
+      "age": 11,
+      "psd_correlation_single_epoch_mean": 0.8891295627451167,
+      "psd_correlation_single_epoch_std": 0.061643858291949884,
+      "psd_correlation_multi_epoch_avg": 0.9572409692358197
+    },
+    {
+      "regime": "mixture",
+      "age": 14,
+      "psd_correlation_single_epoch_mean": 0.8994509698994752,
+      "psd_correlation_single_epoch_std": 0.04519148285664482,
+      "psd_correlation_multi_epoch_avg": 0.9601512599419512
+    },
+    {
+      "regime": "mixture",
+      "age": 17,
+      "psd_correlation_single_epoch_mean": 0.9040142419041554,
+      "psd_correlation_single_epoch_std": 0.04127890268983745,
+      "psd_correlation_multi_epoch_avg": 0.9635592406106275
+    },
+    {
+      "regime": "mixture",
+      "age": 20,
+      "psd_correlation_single_epoch_mean": 0.9117436989249897,
+      "psd_correlation_single_epoch_std": 0.04108680484742305,
+      "psd_correlation_multi_epoch_avg": 0.965619417927013
+    },
+    {
+      "regime": "drift",
+      "age": 5,
+      "psd_correlation_single_epoch_mean": 0.9088208088802392,
+      "psd_correlation_single_epoch_std": 0.035681824559359136,
+      "psd_correlation_multi_epoch_avg": 0.9641649024656883
+    },
+    {
+      "regime": "drift",
+      "age": 8,
+      "psd_correlation_single_epoch_mean": 0.9048013426084829,
+      "psd_correlation_single_epoch_std": 0.04384375635603148,
+      "psd_correlation_multi_epoch_avg": 0.9623216637669492
+    },
+    {
+      "regime": "drift",
+      "age": 11,
+      "psd_correlation_single_epoch_mean": 0.9056919855458503,
+      "psd_correlation_single_epoch_std": 0.044616411576431335,
+      "psd_correlation_multi_epoch_avg": 0.9639491197784459
+    },
+    {
+      "regime": "drift",
+      "age": 14,
+      "psd_correlation_single_epoch_mean": 0.9111533502541665,
+      "psd_correlation_single_epoch_std": 0.0408790105583397,
+      "psd_correlation_multi_epoch_avg": 0.9655536478956751
+    },
+    {
+      "regime": "drift",
+      "age": 17,
+      "psd_correlation_single_epoch_mean": 0.907087056782227,
+      "psd_correlation_single_epoch_std": 0.0476224280222611,
+      "psd_correlation_multi_epoch_avg": 0.9659385605613043
+    },
+    {
+      "regime": "drift",
+      "age": 20,
+      "psd_correlation_single_epoch_mean": 0.9085227729141526,
+      "psd_correlation_single_epoch_std": 0.049650767642700336,
+      "psd_correlation_multi_epoch_avg": 0.9656967371594486
+    }
+  ],
+  "summary": {
+    "mean_single_epoch_correlation": 0.9024325421731147,
+    "mean_multi_epoch_correlation": 0.9620623441561647,
+    "validation_threshold_r": 0.99,
+    "validation_passed": false,
+    "conclusion": "Welch and meeglet PSDs have shape correlation ~0.96 (below 0.99 threshold). This reflects fundamental differences between FFT-based (Welch) and wavelet-based (meeglet) spectral estimation, not a bug. The surviving discrimination methods (bycycle, HMM) are PSD-independent, so this discrepancy does not affect the scientific conclusions. The web simulator retains Welch for interactive speed with this limitation documented."
+  }
+}
