@@ -46,7 +46,7 @@ def api_simulate():
     params = request.get_json()
     age = int(params.get('age', 11))
     regime = params.get('regime', 'chirp')
-    burst_rate = float(params.get('burst_rate', 3.0))
+    burst_rate = float(params.get('burst_rate', 2.0))
     snr_db = float(params.get('snr_db', 8.0))
     n_cycles_min = int(params.get('n_cycles_min', 2))
     n_cycles_max = int(params.get('n_cycles_max', 5))
@@ -143,7 +143,7 @@ def api_compare():
 
         import copy
         config = copy.deepcopy(load_config())
-        config['burst']['rate'] = float(regime_params.get('burst_rate', 3.0))
+        config['burst']['rate'] = float(regime_params.get('burst_rate', 2.0))
         config['burst']['snr_db'] = float(regime_params.get('snr_db', 8.0))
         config['burst']['n_cycles_range'] = [
             int(regime_params.get('n_cycles_min', 2)),

@@ -60,10 +60,14 @@
         hypothesis. The model includes:
     </p>
     <ul>
-        <li><strong>Aperiodic backbone:</strong> 1/f noise with knee at 5 Hz, exponent declining from
-            1.65 (age 5) to 1.35 (age 20), calibrated to empirical HBN resting-state data (n=1,933).</li>
-        <li><strong>Burst generation:</strong> Gaussian-windowed oscillatory bursts at ~3/s with 2&ndash;5
-            cycles each, SNR of 8 dB relative to background.</li>
+        <li><strong>Aperiodic backbone:</strong> 1/f noise with knee at 1 Hz, exponent declining from
+            1.65 (age 5) to 1.35 (age 20), calibrated to empirical HBN resting-state data (n=1,933).
+            The low knee frequency reproduces the empirical delta/theta power ratio (65%/21%).</li>
+        <li><strong>Burst generation:</strong> Gaussian-windowed oscillatory bursts at ~2/s with
+            age-dependent cycle counts (2&ndash;4 at age 5, up to 4&ndash;8 at age 20). Burst SNR ranges
+            from &minus;6 dB (age 5) to &minus;1 dB (age 20) relative to background&mdash;negative values
+            reflect that individual bursts are quieter than the aperiodic floor in the time domain but
+            still contribute visible spectral peaks due to tonal concentration at specific frequencies.</li>
         <li><strong>Developmental PAF curve:</strong> Peak alpha frequency from 6.5 Hz (age 5) to 10.2 Hz
             (age 20), following the Freschl et al. (2022) meta-analytic trajectory.</li>
     </ul>
@@ -73,9 +77,10 @@
         (the &ldquo;theta shelf gate&rdquo;):
     </p>
     <ol>
-        <li><strong>Chirp (Hypothesis A):</strong> Each burst sweeps linearly from 5 Hz to PAF(age).</li>
-        <li><strong>Mixture (Hypothesis B):</strong> Two burst populations&mdash;theta (5 Hz) and alpha (PAF)&mdash;with
-            age-dependent mixing weights.</li>
+        <li><strong>Chirp (Hypothesis A):</strong> A fraction of bursts (85% at age 5, declining to 10% at
+            age 20) sweep linearly from 4 Hz to PAF(age); the remainder are frequency-stable at PAF.</li>
+        <li><strong>Mixture (Hypothesis B):</strong> Two burst populations&mdash;theta (4 Hz) and alpha (PAF)&mdash;with
+            age-dependent mixing weights (85% theta at age 5, declining to 10% at age 20).</li>
         <li><strong>Drift (control):</strong> Single oscillator at PAF with trial-to-trial jitter but no within-burst chirp.</li>
         <li><strong>Co-occurrence:</strong> Theta and alpha bursts with 30% temporal overlap probability.</li>
         <li><strong>Broadband narrowing:</strong> Single oscillator whose bandwidth narrows with age (3&rarr;1 Hz).</li>
@@ -87,9 +92,24 @@
         <figcaption>
             <strong>Figure 1.</strong> Average power spectral density for chirp (red) and mixture (blue) regimes
             across six developmental ages. The two hypotheses produce statistically indistinguishable spectra
-            in the 4&ndash;12 Hz band (&Delta; &lt; 1.2 dB at all ages), confirming the theta-shelf gate.
+            in the 4&ndash;12 Hz band at all ages, confirming the theta-shelf gate.
         </figcaption>
-        <a href="/simulator?regime=chirp&age=8&preset=psd_comparison" class="sim-link">
+        <a href="/simulator?regime=chirp&age=8&burst_rate=2.0&snr_db=-5&n_cycles_min=2&n_cycles_max=5" class="sim-link">
+            Explore in Simulator &rarr;
+        </a>
+    </div>
+
+    <div class="figure-container" id="fig-residual-spectra">
+        <img src="{{ url_for('static', filename='figures/residual_spectra.png') }}" alt="Residual spectra showing developmental theta shelf"
+             onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Residual spectra showing the developmental theta-alpha shift across ages</div>'">
+        <figcaption>
+            <strong>Figure 2.</strong> Residual spectra (full PSD minus aperiodic-only PSD) for chirp and mixture
+            regimes across development. At age 5, the theta shelf is visible as a broad shoulder extending from
+            4&ndash;7 Hz. With increasing age, the residual peak narrows and shifts toward 10 Hz as theta contributions
+            decline. Residual magnitudes are calibrated to empirical HBN values (&theta;: +0.20, &alpha;: +0.53
+            at age 5; &theta;: ~0, &alpha;: +0.90 at age 20).
+        </figcaption>
+        <a href="/simulator?regime=chirp&age=5&burst_rate=2.0&snr_db=-6&compare=mixture" class="sim-link">
             Explore in Simulator &rarr;
         </a>
     </div>
@@ -109,10 +129,11 @@
 
     <h3>Evaluation</h3>
     <p>
-        Each method was applied to all 5 regimes &times; 6 ages &times; 5 random seeds. Discrimination
-        was assessed via ROC AUC (chirp vs. mixture), Cohen&rsquo;s d, and computational cost. Because
-        single 2-second epochs proved insufficient for all methods (AUC &le; 0.59), we additionally
-        evaluated multi-epoch aggregation (30 simulated subjects &times; 50 epochs each).
+        Each method was applied to all 5 regimes &times; 6 ages &times; 5 random seeds at analysis-level
+        SNR (5&ndash;12 dB). Discrimination was assessed via ROC AUC (chirp vs. mixture), Cohen&rsquo;s d,
+        and computational cost. Because single 2-second epochs proved insufficient for all methods
+        (AUC &le; 0.59), we additionally evaluated multi-epoch aggregation (30 simulated subjects
+        &times; 50 epochs each).
     </p>
 </section>
 
@@ -139,8 +160,8 @@
             <tbody>
                 <tr class="survivor">
                     <td>Bycycle (period slope)</td>
-                    <td>0.95&ndash;0.98</td>
-                    <td>2.3&ndash;2.9</td>
+                    <td>0.84&ndash;0.96</td>
+                    <td>1.8&ndash;2.9</td>
                     <td>&lt;0.001s</td>
                     <td>PRIMARY</td>
                 </tr>
@@ -187,12 +208,12 @@
         <img src="{{ url_for('static', filename='figures/bycycle_discrimination.png') }}" alt="Bycycle period slope distributions"
              onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Bycycle period slope distributions for chirp vs. mixture across ages</div>'">
         <figcaption>
-            <strong>Figure 2.</strong> Distribution of mean period slope (bycycle) for chirp (red) and mixture
+            <strong>Figure 3.</strong> Distribution of mean period slope (bycycle) for chirp (red) and mixture
             (blue) regimes, aggregated over 50 epochs per simulated subject. Chirp bursts exhibit systematically
             higher period slopes reflecting within-burst frequency change. Separation increases with age as PAF
-            moves further from the chirp start frequency.
+            moves further from the chirp start frequency (4 Hz). AUC ranges from 0.84 at age 8 to 0.96 at age 17.
         </figcaption>
-        <a href="/simulator?regime=chirp&age=11&compare=mixture&preset=bycycle_disc" class="sim-link">
+        <a href="/simulator?regime=chirp&age=11&burst_rate=2.0&snr_db=8&compare=mixture" class="sim-link">
             Explore in Simulator &rarr;
         </a>
     </div>
@@ -222,10 +243,11 @@
         <img src="{{ url_for('static', filename='figures/robustness.png') }}" alt="Robustness analysis"
              onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Robustness analysis showing stable AUC under artifact injection</div>'">
         <figcaption>
-            <strong>Figure 3.</strong> Method discrimination (AUC) remains stable under progressive artifact
-            injection. Bycycle period slope is unaffected by EOG, EMG, and line noise at realistic amplitudes.
+            <strong>Figure 4.</strong> Method discrimination (AUC) remains stable under progressive artifact
+            injection. Bycycle period slope is unaffected by EOG, EMG, and line noise at realistic amplitudes
+            (&lt;0.03 AUC change in all conditions).
         </figcaption>
-        <a href="/simulator?regime=chirp&age=11&snr_db=4&preset=robustness" class="sim-link">
+        <a href="/simulator?regime=chirp&age=11&burst_rate=2.0&snr_db=8&compare=mixture" class="sim-link">
             Explore in Simulator &rarr;
         </a>
     </div>
@@ -251,8 +273,12 @@
         <li><strong>Multi-epoch requirement:</strong> Reliable discrimination requires ~50 epochs (100 seconds
             of data). Subjects with fewer clean epochs will have noisier estimates.</li>
         <li><strong>Age 5 weakness:</strong> At the youngest age, PAF (6.5 Hz) is very close to the chirp
-            start frequency (5.0 Hz), leaving little frequency range for chirp. Discrimination is weaker here
+            start frequency (4.0 Hz), leaving little frequency range for chirp. Discrimination is weaker here
             (AUC = 0.66).</li>
+        <li><strong>SNR regime dependence:</strong> The calibrated simulation parameters (SNR &minus;6 to &minus;1 dB)
+            produce realistic spectral shapes matching empirical HBN data, but burst detection requires higher
+            SNR (~5+ dB). Method evaluation used analysis-level SNR. Real HBN data quality determines which
+            regime applies in practice.</li>
         <li><strong>Hybrid possibility:</strong> Real developmental EEG may exhibit elements of both
             hypotheses&mdash;chirp within some bursts and mixture across populations. Bycycle period slope
             would show intermediate values in this case.</li>
@@ -271,8 +297,8 @@
     <h2>Conclusion</h2>
     <p>
         Bycycle period slope is a computationally efficient (&lt;0.001 s/epoch), robust, and highly
-        discriminative (AUC &gt; 0.95) indicator of within-burst frequency chirp in simulated developmental
-        EEG. It is the recommended primary method for testing whether the theta-alpha shelf in HBN data
+        discriminative (AUC 0.84&ndash;0.96 for ages 8&ndash;17) indicator of within-burst frequency chirp
+        in simulated developmental EEG. It is the recommended primary method for testing whether the theta-alpha shelf in HBN data
         arises from within-burst chirp (Hypothesis A) or population mixture (Hypothesis B). HMM state
         analysis provides secondary confirmatory evidence. Application to the full HBN dataset will
         determine which hypothesis best accounts for the observed developmental trajectory.

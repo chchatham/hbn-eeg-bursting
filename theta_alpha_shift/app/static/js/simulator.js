@@ -356,5 +356,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize
     loadPresets();
-    runSimulation();
+    if (compareToggle.checked) {
+        runComparison();
+    } else {
+        runSimulation();
+    }
 });

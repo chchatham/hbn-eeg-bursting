@@ -26,15 +26,15 @@
         </div>
 
         <div class="control-group">
-            <label for="burst-rate-slider">Burst rate: <span id="rate-value">3.0</span>/s</label>
-            <input type="range" id="burst-rate-slider" min="0.5" max="8.0" value="3.0" step="0.5">
-            <span class="help-text">Mean number of bursts per second (Poisson)</span>
+            <label for="burst-rate-slider">Burst rate: <span id="rate-value">2.0</span>/s</label>
+            <input type="range" id="burst-rate-slider" min="0.5" max="8.0" value="2.0" step="0.5">
+            <span class="help-text">Mean number of bursts per second (Poisson). Calibrated: 2.0/s.</span>
         </div>
 
         <div class="control-group">
             <label for="snr-slider">SNR: <span id="snr-value">8.0</span> dB</label>
-            <input type="range" id="snr-slider" min="2.0" max="20.0" value="8.0" step="1.0">
-            <span class="help-text">Burst amplitude relative to background</span>
+            <input type="range" id="snr-slider" min="-10.0" max="20.0" value="8.0" step="1.0">
+            <span class="help-text">Burst amplitude relative to background. Negative = bursts quieter than aperiodic in time domain but still spectrally visible. Calibrated range: &minus;6 to &minus;1 dB (realistic); 5&ndash;12 dB (analysis).</span>
         </div>
 
         <div class="control-group">

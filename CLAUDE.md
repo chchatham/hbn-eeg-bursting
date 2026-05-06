@@ -9,6 +9,14 @@ If you are starting a new session, recovering from compaction, or running in a R
 5. Pick up the "Current Focus" from progress.md and work on it.
 6. Before exiting or if context feels heavy: update progress.md with what you did and what is next.
 
+## Environment (READ THIS BEFORE RUNNING ANY CODE)
+- **Virtual environment:** `.venv/` at repo root. ALL Python commands MUST use `.venv/bin/python`
+  or `.venv/bin/pip`. Never install into system Python. Never use bare `python` or `pip`.
+- **Flask dev server:** Use `PORT=5001` on macOS (port 5000 is AirTunes).
+- **Packages pinned** in `requirements.txt` (direct deps, `==` pins) and `requirements-lock.txt`
+  (full freeze). If a package is missing, install into venv and update both files.
+- See `.ralph/guardrails.md` "Environment Hygiene" section for full details.
+
 ## Adaptive Integration Protocol
 This project extends the HBN EEG spectral analysis pipeline at `../hbn-eeg-pipeline/`.
 Read that project's `CLAUDE.md` for full data schemas, epoch format spec, and key findings.

@@ -68,15 +68,14 @@ class TestParams:
             assert bws[i] <= bws[i - 1]
 
     def test_burst_n_cycles_range(self):
-        cfg = load_config()
-        lo, hi = cfg["burst"]["n_cycles_range"]
         rng = np.random.default_rng(42)
-        for _ in range(100):
-            n = burst_n_cycles(rng=rng)
-            assert lo <= n <= hi
+        for age in [5, 11, 20]:
+            for _ in range(50):
+                n = burst_n_cycles(age=age, rng=rng)
+                assert 2 <= n <= 8
 
     def test_knee_freq(self):
-        assert knee_freq() == 5.0
+        assert knee_freq() == 1.0
 
 
 class TestAperiodic:
@@ -142,7 +141,8 @@ class TestRegimeChirp:
         assert len(epoch.burst_times) > 0
         assert len(epoch.burst_freqs) == len(epoch.burst_times)
         assert len(epoch.burst_labels) == len(epoch.burst_times)
-        assert all(l in ("chirp_up", "chirp_down") for l in epoch.burst_labels)
+        valid_labels = {"chirp_up", "chirp_down", "stable_alpha"}
+        assert all(l in valid_labels for l in epoch.burst_labels)
 
     def test_burst_freqs_span_range(self):
         cfg = load_config()
@@ -153,15 +153,15 @@ class TestRegimeChirp:
             if label == "chirp_up":
                 assert freqs[0] == pytest.approx(f_low)
                 assert freqs[-1] == pytest.approx(f_high)
-            else:
+            elif label == "chirp_down":
                 assert freqs[0] == pytest.approx(f_high)
                 assert freqs[-1] == pytest.approx(f_low)
+            else:
+                assert np.all(freqs == pytest.approx(f_high))
 
-    def test_both_directions_present(self):
+    def test_chirp_and_stable_counts(self):
         epoch = simulate_chirp(age=8, rng=np.random.default_rng(42))
-        labels = set(epoch.burst_labels)
-        # With "both" direction and enough bursts, expect both
-        assert epoch.params["n_up"] + epoch.params["n_down"] == epoch.params["n_bursts"]
+        assert epoch.params["n_chirp"] + epoch.params["n_stable"] == epoch.params["n_bursts"]
 
     def test_params_recorded(self):
         cfg = load_config()

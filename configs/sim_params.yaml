@@ -31,7 +31,7 @@ aperiodic:
   exponent:
     ages:  [5,   20]
     values: [1.65, 1.35]
-  knee_freq: 5.0        # Hz, low-frequency knee
+  knee_freq: 1.0        # Hz, low-frequency knee (lowered from 5.0 to fix delta/theta ratio)
   offset: -2.0          # log10 power offset (arbitrary units, tuned to match HBN scale)
 
 # ── Burst parameters ───────────────────────────────────────────────────────
@@ -39,8 +39,18 @@ aperiodic:
 # footprint); older children have longer, stronger bursts (narrow, tall peak).
 # Scalar values are used as-is (e.g., when overridden by the web API).
 # Age-dependent dicts are interpolated by params.py.
+# Negative SNR values = bursts quieter than background in time domain, but
+# still spectrally visible due to tonal concentration at specific frequencies.
+# Calibrated against HBN empirical residual spectra (ThetaShelf.png):
+#   Age 5 chirp: θ-res=+0.20, α-peak=+0.53 (targets: +0.20, +0.50)
+#   Age 20 chirp: θ-res=+0.07, α-peak=+0.90 (targets: ~0, +0.80)
+# NOTE: These calibrated values produce realistic spectra but are too weak
+# for bycycle period-slope discrimination (AUC ~0.55). Stage 1C method
+# evaluation used SNR [5,6.5,8,9.5,11,12] (AUC 0.87+). The web simulator
+# allows SNR overrides so users can explore both presentation and analysis
+# regimes. The analysis SNR threshold for bycycle is ~5 dB at the target age.
 burst:
-  rate: 3.0              # bursts per second (mean, Poisson process)
+  rate: 2.0              # bursts per second (mean, Poisson process)
   n_cycles_range:
     ages: [5,   8,   11,  14,  17,  20]
     lo:   [2,   2,   2,   3,   3,   4]
@@ -48,7 +58,7 @@ burst:
   amplitude: 1.0         # relative amplitude (scaled to aperiodic RMS)
   snr_db:
     ages:   [5,   8,   11,  14,  17,  20]
-    values: [5.0, 6.5, 8.0, 9.5, 11.0, 12.0]
+    values: [-6.0, -5.0, -4.0, -3.0, -2.0, -1.0]
   freq_jitter_hz: 1.0    # cycle-to-cycle frequency jitter (std, Hz)
 
 # ── Regime 1: Chirp (Hypothesis A) ─────────────────────────────────────────
