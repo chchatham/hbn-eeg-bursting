@@ -48,9 +48,9 @@
         </div>
 
         <div class="control-group">
-            <label for="duration-slider">Duration: <span id="duration-value">2.0</span>s</label>
-            <input type="range" id="duration-slider" min="1.0" max="5.0" value="2.0" step="0.5">
-            <span class="help-text">Epoch length (longer = more bursts, slower)</span>
+            <label for="epochs-slider">Epochs: <span id="epochs-value">20</span> &times; 2 s = <span id="total-duration">40</span> s</label>
+            <input type="range" id="epochs-slider" min="1" max="50" value="20" step="1">
+            <span class="help-text">More epochs &rarr; smoother PSD (averages Welch windows). Time series is zoomable.</span>
         </div>
 
         <div class="control-group">
@@ -95,9 +95,25 @@
         <div class="plot-row">
             <div id="plot-psd" class="plot-container"></div>
         </div>
-        <div class="plot-row" id="compare-row" style="display:none;">
-            <div id="plot-compare-ts" class="plot-container"></div>
-            <div id="plot-compare-psd" class="plot-container"></div>
+        <div class="plot-row">
+            <div id="plot-residual" class="plot-container"></div>
+        </div>
+        <div class="plot-row">
+            <div id="plot-slopes" class="plot-container"></div>
+        </div>
+        <div id="compare-row" style="display:none;">
+            <div class="plot-row">
+                <div id="plot-compare-ts" class="plot-container"></div>
+            </div>
+            <div class="plot-row">
+                <div id="plot-compare-psd" class="plot-container"></div>
+            </div>
+            <div class="plot-row">
+                <div id="plot-compare-residual" class="plot-container"></div>
+            </div>
+            <div class="plot-row">
+                <div id="plot-compare-slopes" class="plot-container"></div>
+            </div>
         </div>
     </div>
 

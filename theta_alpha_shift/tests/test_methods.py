@@ -1,5 +1,7 @@
 """Tests for burst detection and spectral analysis method wrappers."""
 
+import importlib
+
 import numpy as np
 import pytest
 
@@ -9,6 +11,8 @@ from theta_alpha_shift.sim.regimes import (
     simulate_mixture,
     simulate_drift,
 )
+
+_has_alphacsc = importlib.util.find_spec("alphacsc") is not None
 
 
 class TestMethodResult:
@@ -165,6 +169,10 @@ class TestItemdIF:
         assert "n_burst_segments" in result.metadata
 
 
+@pytest.mark.skipif(
+    not _has_alphacsc,
+    reason="alphacsc not installed — CDL dropped from Stage 1C triage",
+)
 class TestCDLWrap:
     def _make_epoch(self):
         return simulate_chirp(age=8, rng=np.random.default_rng(42))
