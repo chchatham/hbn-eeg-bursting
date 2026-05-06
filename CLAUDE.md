@@ -51,6 +51,12 @@ alpha peak in younger children — could arise from:
 discriminate these hypotheses. **Stage 2** applies the winners to real HBN EEG data. The
 goal is seamless integration back into the parent HBN analysis project.
 
+The **final deliverable** is a deployed interactive web application (via Railway) with two
+sections: (1) an **About page** presenting a scholarly HTML report (Introduction, Methods,
+Results, Discussion, Conclusion) with embedded figures, where each figure has a button
+linking to (2) a **Simulator page** where users can interactively explore alpha burst
+dynamics under their own parameter choices, confirming key report findings firsthand.
+
 ## Architecture
 theta_alpha_shift/
 ├── sim/
@@ -84,16 +90,30 @@ theta_alpha_shift/
 ├── plots/
 │   ├── init.py
 │   └── figures.py             # all plotting — MUST match parent project style
+├── app/                        # Interactive web application (deployed via Railway)
+│   ├── server.py               # Flask/FastAPI backend — API endpoints for simulation
+│   ├── templates/
+│   │   ├── base.html           # shared layout, navigation (About ↔ Simulator)
+│   │   ├── about.html          # scholarly report page (landing page)
+│   │   └── simulator.html      # interactive parameter exploration page
+│   ├── static/
+│   │   ├── css/                # styles
+│   │   ├── js/                 # client-side interactivity, Plotly bindings
+│   │   └── figures/            # pre-rendered report figures (PNG/SVG)
+│   └── report_content.py       # report text content (sections as structured data)
 ├── tests/
 │   ├── test_sim.py
 │   ├── test_methods.py
 │   └── test_eval.py
 ├── configs/
 │   └── sim_params.yaml        # all simulation hyperparameters
-└── notebooks/
-├── 01_regime_sanity.ipynb
-├── 02_method_eval.ipynb
-└── 03_hbn_results.ipynb
+├── notebooks/
+│   ├── 01_regime_sanity.ipynb
+│   ├── 02_method_eval.ipynb
+│   └── 03_hbn_results.ipynb
+├── Procfile                    # Railway process declaration
+├── railway.json                # Railway deployment config
+└── requirements.txt            # pinned Python deps (analysis + web server)
 
 ## Key Schemas / Interfaces
 
@@ -129,10 +149,12 @@ iterates over methods generically via this interface.
 
 ## Environment
 - Python >= 3.10
-- Core: neurodsp, mne (>= 1.6), specparam (>= 1.1), alphacsc, osl-dynamics, emd, bycycle
+- Core analysis: neurodsp, mne (>= 1.6), specparam (>= 1.1), alphacsc, osl-dynamics, emd, bycycle
+- Web app: Flask or FastAPI (backend), Plotly (interactive plots), Jinja2 (templates)
+- Deployment: Railway (railway.app) — Procfile + railway.json for config
 - Testing: pytest
 - Config: PyYAML for sim_params.yaml
-- Plotting: matplotlib (parent project style), seaborn (sparingly)
+- Plotting: matplotlib (parent project style for static figures), Plotly (interactive figures in app)
 - All versions pinned in requirements.txt at project creation
 
 ## Design Principles
@@ -151,3 +173,10 @@ iterates over methods generically via this interface.
    logged. Any result must be reproducible from config + code + seed.
 7. **Adaptive discovery.** Before implementing any analysis step, consult the parent project
    to check whether a similar function already exists. Reuse and wrap rather than rewrite.
+8. **Report is the deliverable.** The deployed interactive report is the primary output.
+   All analysis code serves the report. The About page tells the scientific story; the
+   Simulator page lets readers verify it. Figures in the report link directly to simulator
+   presets that reproduce the illustrated finding.
+9. **Simulator reuses sim/.** The interactive simulator calls the same simulation functions
+   (sim/regimes.py, sim/aperiodic.py, sim/params.py) used in the analysis pipeline. No
+   separate simulation code for the web app — one codebase, two interfaces.

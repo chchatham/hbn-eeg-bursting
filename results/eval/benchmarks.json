@@ -1,0 +1,44 @@
+[
+  {
+    "method": "specparam_baseline",
+    "wall_seconds_mean": 0.0012154166664307315,
+    "wall_seconds_std": 0.0001868094292596855,
+    "peak_memory_mb": 39.499266624450684,
+    "projected_hbn_hours": 0.10128472220256096
+  },
+  {
+    "method": "bycycle",
+    "wall_seconds_mean": 0.00027694466795461875,
+    "wall_seconds_std": 1.935814127669782e-05,
+    "peak_memory_mb": 0.04026317596435547,
+    "projected_hbn_hours": 0.023078722329551563
+  },
+  {
+    "method": "itemd_if",
+    "wall_seconds_mean": 0.0974852220097091,
+    "wall_seconds_std": 0.0008216878599036505,
+    "peak_memory_mb": 10.787723541259766,
+    "projected_hbn_hours": 8.123768500809092
+  },
+  {
+    "method": "cdl",
+    "wall_seconds_mean": 5.0743677083325265,
+    "wall_seconds_std": 0.34134831450525416,
+    "peak_memory_mb": 30.442930221557617,
+    "projected_hbn_hours": 422.8639756943772
+  },
+  {
+    "method": "threshold_bursts",
+    "wall_seconds_mean": 0.0002819860043625037,
+    "wall_seconds_std": 1.2115780272142438e-05,
+    "peak_memory_mb": 0.04058551788330078,
+    "projected_hbn_hours": 0.023498833696875308
+  },
+  {
+    "method": "hmm",
+    "wall_seconds_mean": 0.05296026399203887,
+    "wall_seconds_std": 0.0016067825764107995,
+    "peak_memory_mb": 9.392312049865723,
+    "projected_hbn_hours": 4.413355332669905
+  }
+]

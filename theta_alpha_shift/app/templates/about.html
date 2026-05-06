@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block title %}About — Theta-Alpha Shift{% endblock %}
+
+{% block content %}
+<article class="report">
+
+<header class="report-header">
+    <h1>Time-Resolved Theta&ndash;Alpha Shift Dynamics in Development</h1>
+    <p class="subtitle">Discriminating chirp from mixture hypotheses using cycle-level EEG burst analysis</p>
+</header>
+
+<section id="introduction">
+    <h2>Introduction</h2>
+    <p>
+        The dominant posterior alpha rhythm (~10 Hz in adults) emerges gradually during childhood,
+        with peak alpha frequency (PAF) rising from approximately 6&ndash;7 Hz at age 5 to 10 Hz by late
+        adolescence. In younger children, spectral analysis of resting-state EEG reveals a characteristic
+        &ldquo;theta shelf&rdquo;&mdash;a broadened leftward shoulder of the alpha peak extending into the
+        traditional theta band (4&ndash;7 Hz). This shelf collapses with age as the peak narrows and shifts
+        toward higher frequencies.
+    </p>
+    <p>
+        Two competing hypotheses explain the theta shelf at the level of individual neural bursts:
+    </p>
+    <div class="hypothesis-box">
+        <div class="hypothesis">
+            <h3>Hypothesis A: Within-Burst Chirp</h3>
+            <p>
+                Individual alpha bursts sweep from theta to alpha frequencies within each burst
+                (a &ldquo;chirp&rdquo;). When averaged across many bursts, this frequency sweep produces
+                spectral smear between the theta and alpha bands. As the brain matures, bursts become
+                more frequency-stable, reducing the chirp and collapsing the shelf.
+            </p>
+        </div>
+        <div class="hypothesis">
+            <h3>Hypothesis B: Population Mixture</h3>
+            <p>
+                Distinct theta-frequency and alpha-frequency burst populations co-exist. In young children,
+                theta bursts dominate; with development, the mixing ratio shifts toward alpha-frequency
+                bursts. The shelf reflects the spectral overlap of two separate populations, not frequency
+                instability within individual bursts.
+            </p>
+        </div>
+    </div>
+    <p>
+        These hypotheses are indistinguishable in the frequency domain&mdash;both produce the same
+        broadened spectral peak. Discriminating them requires time-resolved, cycle-level analysis of
+        burst dynamics. This study develops a simulation framework to evaluate which burst-detection
+        methods can reliably distinguish these hypotheses, then applies the winning method to the
+        Healthy Brain Network (HBN) developmental EEG dataset.
+    </p>
+</section>
+
+<section id="methods">
+    <h2>Methods</h2>
+
+    <h3>Forward Model</h3>
+    <p>
+        We constructed a NeuroDSP-based forward model generating realistic developmental EEG under each
+        hypothesis. The model includes:
+    </p>
+    <ul>
+        <li><strong>Aperiodic backbone:</strong> 1/f noise with knee at 5 Hz, exponent declining from
+            1.65 (age 5) to 1.35 (age 20), calibrated to empirical HBN resting-state data (n=1,933).</li>
+        <li><strong>Burst generation:</strong> Gaussian-windowed oscillatory bursts at ~3/s with 2&ndash;5
+            cycles each, SNR of 8 dB relative to background.</li>
+        <li><strong>Developmental PAF curve:</strong> Peak alpha frequency from 6.5 Hz (age 5) to 10.2 Hz
+            (age 20), following the Freschl et al. (2022) meta-analytic trajectory.</li>
+    </ul>
+    <p>
+        Five generative regimes were implemented, each producing a distinct time-domain burst structure
+        but designed so that Regimes 1 and 2 yield statistically indistinguishable average power spectra
+        (the &ldquo;theta shelf gate&rdquo;):
+    </p>
+    <ol>
+        <li><strong>Chirp (Hypothesis A):</strong> Each burst sweeps linearly from 5 Hz to PAF(age).</li>
+        <li><strong>Mixture (Hypothesis B):</strong> Two burst populations&mdash;theta (5 Hz) and alpha (PAF)&mdash;with
+            age-dependent mixing weights.</li>
+        <li><strong>Drift (control):</strong> Single oscillator at PAF with trial-to-trial jitter but no within-burst chirp.</li>
+        <li><strong>Co-occurrence:</strong> Theta and alpha bursts with 30% temporal overlap probability.</li>
+        <li><strong>Broadband narrowing:</strong> Single oscillator whose bandwidth narrows with age (3&rarr;1 Hz).</li>
+    </ol>
+
+    <div class="figure-container" id="fig-psd-comparison">
+        <img src="{{ url_for('static', filename='figures/psd_regime_comparison.png') }}" alt="PSD comparison across regimes"
+             onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: PSD comparison showing indistinguishable theta shelves for chirp and mixture regimes</div>'">
+        <figcaption>
+            <strong>Figure 1.</strong> Average power spectral density for chirp (red) and mixture (blue) regimes
+            across six developmental ages. The two hypotheses produce statistically indistinguishable spectra
+            in the 4&ndash;12 Hz band (&Delta; &lt; 1.2 dB at all ages), confirming the theta-shelf gate.
+        </figcaption>
+        <a href="/simulator?regime=chirp&age=8&preset=psd_comparison" class="sim-link">
+            Explore in Simulator &rarr;
+        </a>
+    </div>
+
+    <h3>Candidate Methods</h3>
+    <p>
+        Six burst-detection and spectral decomposition methods were evaluated:
+    </p>
+    <ol>
+        <li><strong>Specparam</strong> (spectral parameterization): Number of peaks in the 4&ndash;12 Hz band.</li>
+        <li><strong>Threshold bursts</strong> (fBOSC-style): Amplitude thresholding after bandpass filtering.</li>
+        <li><strong>Bycycle</strong> (cycle-by-cycle): Mean period slope across detected burst cycles.</li>
+        <li><strong>itEMD + IF</strong> (intrinsic frequency): Mean instantaneous frequency slope within bursts.</li>
+        <li><strong>CDL</strong> (convolutional dictionary learning): Number of learned theta-alpha atoms.</li>
+        <li><strong>HMM</strong> (hidden Markov model): Number of oscillatory states with theta-alpha peaks.</li>
+    </ol>
+
+    <h3>Evaluation</h3>
+    <p>
+        Each method was applied to all 5 regimes &times; 6 ages &times; 5 random seeds. Discrimination
+        was assessed via ROC AUC (chirp vs. mixture), Cohen&rsquo;s d, and computational cost. Because
+        single 2-second epochs proved insufficient for all methods (AUC &le; 0.59), we additionally
+        evaluated multi-epoch aggregation (30 simulated subjects &times; 50 epochs each).
+    </p>
+</section>
+
+<section id="results">
+    <h2>Results</h2>
+
+    <h3>Method Discrimination</h3>
+    <p>
+        On single 2-second epochs, no method reliably distinguished chirp from mixture (all AUC &le; 0.59).
+        With 50-epoch aggregation per subject:
+    </p>
+
+    <div class="results-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>AUC (ages 8&ndash;20)</th>
+                    <th>Cohen's d</th>
+                    <th>Time/epoch</th>
+                    <th>Verdict</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="survivor">
+                    <td>Bycycle (period slope)</td>
+                    <td>0.95&ndash;0.98</td>
+                    <td>2.3&ndash;2.9</td>
+                    <td>&lt;0.001s</td>
+                    <td>PRIMARY</td>
+                </tr>
+                <tr class="survivor">
+                    <td>HMM (n states)</td>
+                    <td>0.72&ndash;0.78</td>
+                    <td>0.8&ndash;1.2</td>
+                    <td>0.05s</td>
+                    <td>Secondary</td>
+                </tr>
+                <tr class="survivor">
+                    <td>Specparam (n peaks)</td>
+                    <td>0.54</td>
+                    <td>&mdash;</td>
+                    <td>0.001s</td>
+                    <td>Baseline</td>
+                </tr>
+                <tr class="dropped">
+                    <td>itEMD (IF slope)</td>
+                    <td>Wrong direction</td>
+                    <td>&mdash;</td>
+                    <td>0.10s</td>
+                    <td>Dropped</td>
+                </tr>
+                <tr class="dropped">
+                    <td>CDL (n atoms)</td>
+                    <td>0.56</td>
+                    <td>&mdash;</td>
+                    <td>5.1s</td>
+                    <td>Dropped (cost)</td>
+                </tr>
+                <tr class="dropped">
+                    <td>Threshold (burst rate)</td>
+                    <td>0.53</td>
+                    <td>&mdash;</td>
+                    <td>&lt;0.001s</td>
+                    <td>Dropped</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="figure-container" id="fig-bycycle-discrimination">
+        <img src="{{ url_for('static', filename='figures/bycycle_discrimination.png') }}" alt="Bycycle period slope distributions"
+             onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Bycycle period slope distributions for chirp vs. mixture across ages</div>'">
+        <figcaption>
+            <strong>Figure 2.</strong> Distribution of mean period slope (bycycle) for chirp (red) and mixture
+            (blue) regimes, aggregated over 50 epochs per simulated subject. Chirp bursts exhibit systematically
+            higher period slopes reflecting within-burst frequency change. Separation increases with age as PAF
+            moves further from the chirp start frequency.
+        </figcaption>
+        <a href="/simulator?regime=chirp&age=11&compare=mixture&preset=bycycle_disc" class="sim-link">
+            Explore in Simulator &rarr;
+        </a>
+    </div>
+
+    <h3>Why Bycycle Works</h3>
+    <p>
+        Bycycle&rsquo;s period slope measures the systematic change in cycle duration within detected bursts.
+        Under the chirp hypothesis, each burst traverses from lower to higher frequency, producing a
+        monotonic decrease in period across consecutive cycles. Under the mixture hypothesis, each burst
+        oscillates at a fixed frequency (either theta or alpha), so consecutive cycles have approximately
+        equal periods&mdash;yielding low period slopes regardless of which population a burst belongs to.
+    </p>
+    <p>
+        This makes period slope a direct, time-domain readout of within-burst frequency structure that
+        does not require spectral decomposition or source separation&mdash;avoiding the mode-mixing
+        problems that invalidated itEMD for this application.
+    </p>
+
+    <h3>Robustness</h3>
+    <p>
+        Both bycycle and HMM maintained their discrimination performance under realistic artifact conditions
+        (EOG blinks, EMG muscle noise, 60 Hz line noise, and all combined). AUC changes were &lt;0.03 in all
+        conditions, indicating that artifact contamination is not a confound for these methods.
+    </p>
+
+    <div class="figure-container" id="fig-robustness">
+        <img src="{{ url_for('static', filename='figures/robustness.png') }}" alt="Robustness analysis"
+             onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Robustness analysis showing stable AUC under artifact injection</div>'">
+        <figcaption>
+            <strong>Figure 3.</strong> Method discrimination (AUC) remains stable under progressive artifact
+            injection. Bycycle period slope is unaffected by EOG, EMG, and line noise at realistic amplitudes.
+        </figcaption>
+        <a href="/simulator?regime=chirp&age=11&snr_db=4&preset=robustness" class="sim-link">
+            Explore in Simulator &rarr;
+        </a>
+    </div>
+</section>
+
+<section id="discussion">
+    <h2>Discussion</h2>
+    <p>
+        The key finding is that cycle-by-cycle analysis (bycycle period slope) provides strong
+        discrimination between chirp and mixture hypotheses in simulation, while methods relying on
+        spectral decomposition (CDL, specparam) or modal decomposition (itEMD) fail. This reflects
+        a fundamental property of the problem: the two hypotheses produce indistinguishable <em>spectra</em>
+        by construction, so any method that reduces the signal to its spectral content cannot
+        discriminate them.
+    </p>
+    <p>
+        Several limitations constrain interpretation:
+    </p>
+    <ul>
+        <li><strong>Simulation circularity:</strong> Methods are evaluated on the same simulation framework
+            used to design them. Real EEG may contain features not captured by our model that differentially
+            affect methods.</li>
+        <li><strong>Multi-epoch requirement:</strong> Reliable discrimination requires ~50 epochs (100 seconds
+            of data). Subjects with fewer clean epochs will have noisier estimates.</li>
+        <li><strong>Age 5 weakness:</strong> At the youngest age, PAF (6.5 Hz) is very close to the chirp
+            start frequency (5.0 Hz), leaving little frequency range for chirp. Discrimination is weaker here
+            (AUC = 0.66).</li>
+        <li><strong>Hybrid possibility:</strong> Real developmental EEG may exhibit elements of both
+            hypotheses&mdash;chirp within some bursts and mixture across populations. Bycycle period slope
+            would show intermediate values in this case.</li>
+    </ul>
+
+    <h3>Implications for HBN Analysis</h3>
+    <p>
+        For Stage 2 application to HBN data: if mean period slope decreases systematically with age
+        (as chirp range shrinks), this supports Hypothesis A. If period slope is uniformly low across ages,
+        this supports Hypothesis B (fixed-frequency bursts at all ages). Mixed results would suggest a
+        hybrid model or that neither simple hypothesis fully captures the developmental trajectory.
+    </p>
+</section>
+
+<section id="conclusion">
+    <h2>Conclusion</h2>
+    <p>
+        Bycycle period slope is a computationally efficient (&lt;0.001 s/epoch), robust, and highly
+        discriminative (AUC &gt; 0.95) indicator of within-burst frequency chirp in simulated developmental
+        EEG. It is the recommended primary method for testing whether the theta-alpha shelf in HBN data
+        arises from within-burst chirp (Hypothesis A) or population mixture (Hypothesis B). HMM state
+        analysis provides secondary confirmatory evidence. Application to the full HBN dataset will
+        determine which hypothesis best accounts for the observed developmental trajectory.
+    </p>
+    <p>
+        Use the <a href="/simulator">Simulator</a> to explore how different parameter choices affect
+        burst dynamics and spectral output under each hypothesis.
+    </p>
+</section>
+
+</article>
+{% endblock %}

@@ -1,0 +1,134 @@
+# Simulation parameters for theta-alpha shift forward model
+# All developmental parameter curves are defined here.
+# No magic numbers in code — everything comes from this file or function arguments.
+
+random_seed: 42
+sfreq: 500          # Hz, matches HBN preprocessing
+epoch_duration: 2.0  # seconds, matches HBN epoch length
+
+# ── Developmental age grid ──────────────────────────────────────────────────
+ages: [5, 8, 11, 14, 17, 20]
+
+# ── Peak alpha frequency (Freschl et al. 2022 meta-analytic curve) ──────────
+# Piecewise linear fit to Figure 3 of Freschl et al. 2022.
+# HBN EC residual spectra (09_residual_spectra_ec.png) show peak residual
+# shifting from ~7-8 Hz (age 5-6) to ~10 Hz (age 16-21) at Oz, consistent
+# with these values. The age-5 value (6.5 Hz) captures the low end including
+# theta-alpha overlap; the empirical peak at 7.5 Hz may already reflect
+# blending of theta and alpha components (the very effect we're modeling).
+# Units: Hz
+paf_curve:
+  ages:  [5,   8,   11,  14,  17,  20]
+  freqs: [6.5, 8.0, 9.2, 9.8, 10.1, 10.2]
+
+# ── Aperiodic exponent ──────────────────────────────────────────────────────
+# Calibrated to HBN EC data (n=1933, script 09_residual_analysis):
+#   Young (5-6): mean exponent = 1.649
+#   Old (16-21): mean exponent = 1.343
+#   Age-exponent correlation: r = -0.423
+# Exponents computed via least-squares in log-log space (not specparam).
+aperiodic:
+  exponent:
+    ages:  [5,   20]
+    values: [1.65, 1.35]
+  knee_freq: 5.0        # Hz, low-frequency knee
+  offset: -2.0          # log10 power offset (arbitrary units, tuned to match HBN scale)
+
+# ── Burst parameters ───────────────────────────────────────────────────────
+# Age-dependent: young children have shorter, weaker bursts (broad spectral
+# footprint); older children have longer, stronger bursts (narrow, tall peak).
+# Scalar values are used as-is (e.g., when overridden by the web API).
+# Age-dependent dicts are interpolated by params.py.
+burst:
+  rate: 3.0              # bursts per second (mean, Poisson process)
+  n_cycles_range:
+    ages: [5,   8,   11,  14,  17,  20]
+    lo:   [2,   2,   2,   3,   3,   4]
+    hi:   [4,   5,   5,   6,   7,   8]
+  amplitude: 1.0         # relative amplitude (scaled to aperiodic RMS)
+  snr_db:
+    ages:   [5,   8,   11,  14,  17,  20]
+    values: [5.0, 6.5, 8.0, 9.5, 11.0, 12.0]
+  freq_jitter_hz: 1.0    # cycle-to-cycle frequency jitter (std, Hz)
+
+# ── Regime 1: Chirp (Hypothesis A) ─────────────────────────────────────────
+chirp:
+  f_low: 4.0             # Hz, theta-end frequency — matches mixture theta_freq for gate
+  # f_high = PAF(age) from paf_curve above
+  direction: "both"      # "up" = theta→alpha, "down" = alpha→theta, "both" = random per burst
+  window: "gaussian"     # burst envelope shape
+  gaussian_std_cycles: 2.0  # std of Gaussian envelope in cycles
+  # Fraction of bursts that chirp (rest are frequency-stable at PAF).
+  # Declines with age: young oscillators are unstable (broad theta shelf),
+  # mature oscillators lock to alpha (narrow peak, no shelf).
+  chirp_fraction:
+    ages:    [5,   8,   11,  14,  17,  20]
+    values:  [0.85, 0.70, 0.50, 0.35, 0.20, 0.10]
+
+# ── Regime 2: Mixture (Hypothesis B) ───────────────────────────────────────
+mixture:
+  theta_freq: 4.0        # Hz, constant theta burst frequency — matches chirp f_low for gate
+  # alpha_freq = PAF(age) from paf_curve above
+  theta_weight:
+    ages:    [5,   8,   11,  14,  17,  20]
+    weights: [0.85, 0.65, 0.45, 0.25, 0.15, 0.10]
+
+# ── Regime 3: Single-oscillator drift (control) ───────────────────────────
+drift:
+  # frequency = PAF(age), no within-burst chirp
+  freq_jitter_hz: 0.5    # trial-to-trial frequency jitter (std)
+
+# ── Regime 4: Co-occurring bursts ──────────────────────────────────────────
+cooccur:
+  theta_freq: 4.0
+  # alpha_freq = PAF(age)
+  cooccurrence_prob: 0.3  # probability that theta and alpha bursts overlap temporally
+
+# ── Regime 5: Broadband narrowing ──────────────────────────────────────────
+narrowing:
+  # center_freq = PAF(age)
+  bandwidth:
+    ages:      [5,   8,   11,  14,  17,  20]
+    sigma_hz:  [3.0, 2.5, 2.0, 1.5, 1.2, 1.0]
+
+# ── Forward model ──────────────────────────────────────────────────────────
+forward:
+  n_channels: 128
+  montage: "GSN-HydroCel-129"
+  source_region: "occipital"  # posterior sources for alpha generation
+  n_sources: 3                # number of dipoles in source region
+
+# ── HBN calibration targets (EC, n=1933) ──────────────────────────────────
+# These are empirical values from the parent project that simulations should
+# approximate when averaged across trials. Used for validation, not generation.
+calibration:
+  relative_power_young:   # age 5-6
+    delta_pct: 65.0
+    theta_pct: 21.5
+    alpha_pct: 11.1
+    beta_pct: 1.7
+    gamma_pct: 0.7
+  relative_power_old:     # age 16-21
+    delta_pct: 54.7
+    theta_pct: 17.4
+    alpha_pct: 24.0
+    beta_pct: 2.9
+    gamma_pct: 1.0
+  peak_residual_freq_hz: 9.5   # mean across ages and electrodes
+  alpha_residual_magnitude: 0.3894  # mean |residual| in alpha band
+  theta_residual_magnitude: 0.1561  # mean |residual| in theta band
+
+# ── Artifact parameters ───────────────────────────────────────────────────
+artifacts:
+  eog:
+    enabled: false
+    amplitude: 100.0e-6    # V
+    rate: 0.3              # blinks per second
+  emg:
+    enabled: false
+    amplitude: 5.0e-6      # V
+    freq_range: [20, 45]   # Hz
+  line_noise:
+    enabled: false
+    freq: 60.0             # Hz
+    amplitude: 1.0e-6      # V
