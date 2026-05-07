@@ -269,6 +269,21 @@
         quality filters). Split-half reliability was assessed across 1,000 random splits.
     </p>
 
+    <div class="figure-container" id="fig-empirical-trajectories">
+        <img src="{{ url_for('static', filename='figures/hbn_empirical_trajectories.png') }}" alt="Developmental trajectories of bycycle period slope, HMM states, and peak alpha frequency across age"
+             onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Developmental trajectories (bycycle, HMM, PAF) across six age bins in HBN (n=1,885)</div>'">
+        <figcaption>
+            <strong>Figure 5.</strong> Developmental trajectories across six age bins in HBN (n&nbsp;=&nbsp;1,885).
+            Individual subjects shown as gray points. <strong>(A)</strong> Bycycle mean period slope declines from
+            4.6 (ages 5&ndash;6) to 3.6 (ages 16&ndash;21), indicating reduced within-burst frequency chirp
+            with maturation (&rho;&nbsp;=&nbsp;&minus;0.31, d&nbsp;=&nbsp;0.63). <strong>(B)</strong> HMM oscillatory
+            state count decreases from 1.35 to 1.13, reflecting spectral convergence toward a single alpha mode
+            (&rho;&nbsp;=&nbsp;&minus;0.41, d&nbsp;=&nbsp;1.05). <strong>(C)</strong> Peak alpha frequency rises
+            from 8.8 to 9.7 Hz (r&nbsp;=&nbsp;0.40), confirming the expected developmental PAF shift.
+            Error bars: 95% CI of the mean.
+        </figcaption>
+    </div>
+
     <h4>Bycycle Period Slopes Decline with Age</h4>
     <p>
         Mean period slope decreased from 4.64 (ages 5&ndash;6) to 3.58 (ages 16&ndash;21),
@@ -328,6 +343,28 @@
         meeglet-derived peak frequencies showed strong agreement (Pearson r&nbsp;=&nbsp;0.81,
         mean absolute difference 0.4 Hz).
     </p>
+
+    <h4>Sex Invariance</h4>
+    <p>
+        Both key findings replicate identically across sex. Males (n&nbsp;=&nbsp;1,236) and
+        females (n&nbsp;=&nbsp;649) show overlapping developmental trajectories for bycycle period
+        slope (M: &rho;&nbsp;=&nbsp;&minus;0.32, d&nbsp;=&nbsp;0.69; F: &rho;&nbsp;=&nbsp;&minus;0.31,
+        d&nbsp;=&nbsp;0.57) and HMM oscillatory states (M: &rho;&nbsp;=&nbsp;&minus;0.40,
+        d&nbsp;=&nbsp;0.99; F: &rho;&nbsp;=&nbsp;&minus;0.42, d&nbsp;=&nbsp;1.19). The correlation
+        difference between sexes is &lt;0.02 for both measures, confirming that the chirp-to-stable
+        transition is a sex-invariant maturational process.
+    </p>
+
+    <div class="figure-container" id="fig-sex-stratified">
+        <img src="{{ url_for('static', filename='figures/hbn_sex_stratified.png') }}" alt="Sex-stratified developmental trajectories"
+             onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Sex-stratified trajectories showing identical age trends in males and females</div>'">
+        <figcaption>
+            <strong>Figure 6.</strong> Sex-stratified developmental trajectories.
+            <strong>(A)</strong> Bycycle period slope and <strong>(B)</strong> HMM oscillatory states
+            show parallel declines in males (blue) and females (red), confirming that the within-burst
+            chirp transition is sex-invariant. Error bars: 95% CI of the mean.
+        </figcaption>
+    </div>
 </section>
 
 <section id="discussion">
@@ -365,6 +402,19 @@
         persisting into adolescence, or for other sources of cycle-to-cycle frequency variation unrelated
         to either hypothesis (e.g., non-stationarity of PAF itself).
     </p>
+
+    <div class="figure-container" id="fig-effect-sizes">
+        <img src="{{ url_for('static', filename='figures/hbn_effect_sizes.png') }}" alt="Effect size progression across development"
+             onerror="this.parentElement.innerHTML='<div class=figure-placeholder>Figure: Adjacent-bin effect sizes showing progressive accumulation across development</div>'">
+        <figcaption>
+            <strong>Figure 7.</strong> Adjacent-bin Cohen&rsquo;s d for <strong>(A)</strong> bycycle
+            period slope and <strong>(B)</strong> HMM oscillatory states. The largest single-step
+            changes for bycycle occur at the 9&ndash;10 vs. 11&ndash;12 transition (d&nbsp;=&nbsp;0.28),
+            suggesting a critical period for burst stabilization. HMM shows progressive accumulation
+            across all transitions. Dotted lines: overall young-vs-old effect size with 95% CI.
+            Dashed gray line: small effect threshold (d&nbsp;=&nbsp;0.2).
+        </figcaption>
+    </div>
 
     <h3>Method Insights</h3>
     <p>
