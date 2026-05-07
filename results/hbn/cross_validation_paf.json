@@ -1,0 +1,48 @@
+{
+  "description": "Cross-validation of miniset per-epoch Welch-specparam peak freq vs parent meeglet alpha-band peak",
+  "n_subjects_matched": 173,
+  "pearson_r_per_subject": 0.809,
+  "mean_diff_hz": 0.13,
+  "mean_abs_diff_hz": 0.4,
+  "age_paf_corr_ours": 0.447,
+  "age_paf_corr_parent": 0.476,
+  "by_age_bin": {
+    "5-6": {
+      "ours": 8.7,
+      "parent": 8.5,
+      "diff": 0.2,
+      "n": 35
+    },
+    "7-8": {
+      "ours": 9.2,
+      "parent": 8.8,
+      "diff": 0.4,
+      "n": 32
+    },
+    "9-10": {
+      "ours": 9.5,
+      "parent": 9.2,
+      "diff": 0.3,
+      "n": 25
+    },
+    "11-12": {
+      "ours": 9.7,
+      "parent": 9.6,
+      "diff": 0.0,
+      "n": 27
+    },
+    "13-15": {
+      "ours": 9.9,
+      "parent": 10.1,
+      "diff": 0.1,
+      "n": 27
+    },
+    "16-21": {
+      "ours": 9.7,
+      "parent": 9.7,
+      "diff": 0.0,
+      "n": 27
+    }
+  },
+  "note": "Initial cross-validation using full 4-14 Hz range showed r=0.528 due to apples-oranges comparison: parent meeglet stores total PSD (aperiodic+periodic), so young children peak at 4 Hz (aperiodic dominance). Restricting to alpha band (7-14 Hz) gives proper comparison: r=0.809, mean diff 0.13 Hz."
+}
