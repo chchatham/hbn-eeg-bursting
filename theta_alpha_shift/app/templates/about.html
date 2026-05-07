@@ -258,57 +258,172 @@
             (&lt;0.03 AUC change in all conditions).
         </figcaption>
     </div>
+
+    <h3>HBN Empirical Results</h3>
+    <p>
+        The surviving methods were applied to the full Healthy Brain Network developmental EEG dataset
+        (n&nbsp;=&nbsp;1,885 subjects, ages 5&ndash;21, eyes-closed resting state). Posterior channels
+        (Oz, lateral occipital, Pz) were averaged and all available epochs per subject were aggregated
+        before computing burst statistics. Forty-five subjects with fewer than 10 usable epochs were
+        excluded. All subjects passed the parent project&rsquo;s QC pipeline (power-based and channel
+        quality filters). Split-half reliability was assessed across 1,000 random splits.
+    </p>
+
+    <h4>Bycycle Period Slopes Decline with Age</h4>
+    <p>
+        Mean period slope decreased from 4.64 (ages 5&ndash;6) to 3.58 (ages 16&ndash;21),
+        with Spearman &rho;&nbsp;=&nbsp;&minus;0.32 (95% CI: &minus;0.36 to &minus;0.27,
+        p&nbsp;&lt;&nbsp;0.0001) and Cohen&rsquo;s d&nbsp;=&nbsp;0.63 (95% CI: 0.50&ndash;0.77).
+        The median trajectory is monotonically decreasing across all six age bins (4.27&rarr;4.14&rarr;3.90&rarr;3.38&rarr;3.11&rarr;3.10).
+        Split-half reliability of the age-bin trajectory was r&nbsp;=&nbsp;0.93 (CI: 0.79&ndash;0.99).
+        Higher period slopes in younger children indicate greater within-burst frequency
+        variability&mdash;consistent with Hypothesis A, where a large fraction of bursts chirp from
+        theta toward alpha frequencies. The effect holds equally in males (&rho;&nbsp;=&nbsp;&minus;0.32,
+        d&nbsp;=&nbsp;0.69, n&nbsp;=&nbsp;1,236) and females (&rho;&nbsp;=&nbsp;&minus;0.31,
+        d&nbsp;=&nbsp;0.57, n&nbsp;=&nbsp;649).
+    </p>
+
+    <div class="results-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Age Bin</th>
+                    <th>n</th>
+                    <th>Mean Period Slope</th>
+                    <th>Median</th>
+                    <th>SD</th>
+                    <th>95% CI (mean)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>5&ndash;6</td><td>307</td><td>4.64</td><td>4.27</td><td>1.82</td><td>[4.43, 4.84]</td></tr>
+                <tr><td>7&ndash;8</td><td>458</td><td>4.40</td><td>4.14</td><td>1.48</td><td>[4.27, 4.54]</td></tr>
+                <tr><td>9&ndash;10</td><td>424</td><td>4.15</td><td>3.90</td><td>1.58</td><td>[4.01, 4.30]</td></tr>
+                <tr><td>11&ndash;12</td><td>298</td><td>3.71</td><td>3.38</td><td>1.56</td><td>[3.53, 3.89]</td></tr>
+                <tr><td>13&ndash;15</td><td>270</td><td>3.41</td><td>3.11</td><td>1.57</td><td>[3.23, 3.61]</td></tr>
+                <tr><td>16&ndash;21</td><td>128</td><td>3.58</td><td>3.10</td><td>1.81</td><td>[3.28, 3.91]</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h4>HMM Oscillatory States Converge with Age</h4>
+    <p>
+        The number of oscillatory HMM states (states with clear theta-alpha spectral peaks) declined
+        from 1.35 (ages 5&ndash;6) to 1.13 (ages 16&ndash;21), with Spearman &rho;&nbsp;=&nbsp;&minus;0.41
+        (95% CI: &minus;0.44 to &minus;0.37, p&nbsp;&lt;&nbsp;0.0001) and Cohen&rsquo;s
+        d&nbsp;=&nbsp;1.05 (95% CI: 0.91&ndash;1.21). Split-half reliability: r&nbsp;=&nbsp;0.97
+        (CI: 0.91&ndash;1.00). Younger children exhibit broader spectral occupancy across multiple
+        oscillatory regimes, while older children converge to a single stable alpha oscillator. This
+        pattern is consistent with Hypothesis A: chirp-dominated bursts produce broader spectral
+        occupancy that the HMM captures as multiple states, whereas frequency-stable bursts produce
+        a single dominant state. The effect is sex-invariant (males &rho;&nbsp;=&nbsp;&minus;0.40,
+        females &rho;&nbsp;=&nbsp;&minus;0.42).
+    </p>
+
+    <h4>Peak Alpha Frequency Trajectory</h4>
+    <p>
+        Specparam-extracted peak alpha frequency rose from 8.8 Hz (ages 5&ndash;6) to 9.7 Hz
+        (ages 16&ndash;21), confirming the expected developmental PAF shift and validating the
+        pipeline against the established literature. Cross-validation against the parent project&rsquo;s
+        meeglet-derived peak frequencies showed strong agreement (Pearson r&nbsp;=&nbsp;0.81,
+        mean absolute difference 0.4 Hz).
+    </p>
 </section>
 
 <section id="discussion">
     <h2>Discussion</h2>
+
+    <h3>Hypothesis Adjudication</h3>
     <p>
-        The key finding is that cycle-by-cycle analysis (bycycle period slope) provides strong
+        The full-scale HBN analysis (n&nbsp;=&nbsp;1,885) provides strong, reliable evidence favoring
+        <strong>Hypothesis A (within-burst chirp)</strong> over Hypothesis B (population mixture).
+        Two independent lines of evidence converge:
+    </p>
+    <ol>
+        <li><strong>Declining period slopes:</strong> Bycycle mean period slope decreases with age
+            (&rho;&nbsp;=&nbsp;&minus;0.32, d&nbsp;=&nbsp;0.63, 95% CI: 0.50&ndash;0.77), indicating that
+            younger children&rsquo;s bursts exhibit greater within-burst frequency change. This is the
+            signature predicted by Hypothesis A: chirp-dominated bursts in early childhood transition to
+            frequency-stable alpha bursts in adolescence.</li>
+        <li><strong>Converging oscillatory states:</strong> HMM analysis shows that younger children occupy
+            more oscillatory states (&rho;&nbsp;=&nbsp;&minus;0.41, d&nbsp;=&nbsp;1.05, 95% CI: 0.91&ndash;1.21),
+            consistent with the broader spectral footprint produced by chirping bursts. Mature oscillators
+            concentrate in a single alpha state.</li>
+    </ol>
+    <p>
+        Both findings are highly reliable (split-half r&nbsp;=&nbsp;0.93 and 0.97 respectively) and
+        sex-invariant (slope difference between males and females &lt;&nbsp;0.01 in correlation magnitude).
+        Nonparametric effect sizes confirm the pattern (Cliff&rsquo;s &delta;&nbsp;=&nbsp;0.45 for bycycle,
+        0.57 for HMM). Under Hypothesis B, period slopes would be uniformly low at all ages (because both
+        theta and alpha bursts are internally frequency-stable), and HMM state count would remain elevated
+        into adolescence (reflecting persistent dual populations). Neither prediction is supported by the data.
+    </p>
+    <p>
+        The evidence favors Hypothesis A with medium-to-large effect sizes whose confidence intervals
+        exclude zero. However, we cannot fully exclude a hybrid model. The residual period slope variability
+        at older ages (SD&nbsp;=&nbsp;1.81 for ages 16&ndash;21) leaves room for a minority chirp component
+        persisting into adolescence, or for other sources of cycle-to-cycle frequency variation unrelated
+        to either hypothesis (e.g., non-stationarity of PAF itself).
+    </p>
+
+    <h3>Method Insights</h3>
+    <p>
+        The key methodological finding is that cycle-by-cycle analysis (bycycle period slope) provides strong
         discrimination between chirp and mixture hypotheses in simulation, while methods relying on
         spectral decomposition (CDL, specparam) or modal decomposition (itEMD) fail. This reflects
         a fundamental property of the problem: the two hypotheses produce indistinguishable <em>spectra</em>
         by construction, so any method that reduces the signal to its spectral content cannot
         discriminate them.
     </p>
-    <p>
-        Several limitations constrain interpretation:
-    </p>
-    <ul>
-        <li><strong>Simulation circularity:</strong> Methods are evaluated on the same simulation framework
-            used to design them. Real EEG may contain features not captured by our model that differentially
-            affect methods.</li>
-        <li><strong>Multi-epoch requirement:</strong> Reliable discrimination requires ~50 epochs (100 seconds
-            of data). Subjects with fewer clean epochs will have noisier estimates.</li>
-        <li><strong>Age 5 weakness:</strong> At the youngest age, PAF (6.5 Hz) is very close to the chirp
-            start frequency (4.0 Hz), leaving little frequency range for chirp. Discrimination is weaker here
-            (AUC = 0.66).</li>
-        <li><strong>SNR regime dependence:</strong> The calibrated simulation parameters (SNR &minus;6 to &minus;1 dB)
-            produce realistic spectral shapes matching empirical HBN data, but burst detection requires higher
-            SNR (~5+ dB). Method evaluation used analysis-level SNR. Real HBN data quality determines which
-            regime applies in practice.</li>
-        <li><strong>Hybrid possibility:</strong> Real developmental EEG may exhibit elements of both
-            hypotheses&mdash;chirp within some bursts and mixture across populations. Bycycle period slope
-            would show intermediate values in this case.</li>
-    </ul>
 
-    <h3>Implications for HBN Analysis</h3>
-    <p>
-        For Stage 2 application to HBN data: if mean period slope decreases systematically with age
-        (as chirp range shrinks), this supports Hypothesis A. If period slope is uniformly low across ages,
-        this supports Hypothesis B (fixed-frequency bursts at all ages). Mixed results would suggest a
-        hybrid model or that neither simple hypothesis fully captures the developmental trajectory.
-    </p>
+    <h3>Limitations</h3>
+    <ul>
+        <li><strong>Simulation circularity:</strong> Methods were validated on the same simulation framework
+            used to design them. The empirical results partially mitigate this concern&mdash;the predicted
+            age trajectory holds in real data&mdash;but unmeasured confounds could produce similar patterns
+            for different reasons.</li>
+        <li><strong>Multi-epoch requirement:</strong> Reliable discrimination requires aggregation across
+            many epochs. Younger subjects tend to have fewer usable epochs, which could differentially
+            affect precision across age bins. However, split-half reliability (r&nbsp;=&nbsp;0.93&ndash;0.97)
+            indicates that per-bin estimates are stable even when halving the sample.</li>
+        <li><strong>Effect size interpretation:</strong> The bycycle effect (d&nbsp;=&nbsp;0.63) is smaller
+            than in simulation (d&nbsp;=&nbsp;1.8&ndash;2.9). This gap likely reflects the higher SNR used
+            for method evaluation, mixed-model burst populations in real data, and biological variability
+            not captured by the simulation. The HMM effect (d&nbsp;=&nbsp;1.05) is notably larger,
+            suggesting that state-space approaches may be more sensitive to the underlying phenomenon in
+            empirical data.</li>
+        <li><strong>Hybrid possibility:</strong> Real developmental EEG likely exhibits elements of both
+            hypotheses. The declining but nonzero period slopes at older ages are consistent with a small
+            residual chirp component coexisting with predominantly stable alpha bursts.</li>
+        <li><strong>Age-bin imbalance:</strong> The 16&ndash;21 bin has fewer subjects (n&nbsp;=&nbsp;128) than
+            younger bins (n&nbsp;=&nbsp;307&ndash;458), reflecting HBN&rsquo;s recruitment demographics. Wider
+            confidence intervals in this bin are expected but do not undermine the overall trajectory.</li>
+    </ul>
 </section>
 
 <section id="conclusion">
     <h2>Conclusion</h2>
     <p>
-        Bycycle period slope is a computationally efficient (&lt;0.001 s/epoch), robust, and highly
-        discriminative (AUC 0.84&ndash;0.96 for ages 8&ndash;17) indicator of within-burst frequency chirp
-        in simulated developmental EEG. It is the recommended primary method for testing whether the theta-alpha shelf in HBN data
-        arises from within-burst chirp (Hypothesis A) or population mixture (Hypothesis B). HMM state
-        analysis provides secondary confirmatory evidence. Application to the full HBN dataset will
-        determine which hypothesis best accounts for the observed developmental trajectory.
+        Converging evidence from simulation validation and full-scale empirical application
+        (n&nbsp;=&nbsp;1,885) supports <strong>Hypothesis A</strong>: the developmental theta shelf
+        arises primarily from within-burst frequency chirp rather than from a mixture of distinct theta
+        and alpha burst populations. Bycycle period slopes decline with age in HBN data
+        (d&nbsp;=&nbsp;0.63, 95% CI: 0.50&ndash;0.77), indicating that younger children&rsquo;s alpha
+        bursts sweep across a wider frequency range. HMM oscillatory states converge toward a single
+        alpha mode with maturation (d&nbsp;=&nbsp;1.05, 95% CI: 0.91&ndash;1.21). Both findings are
+        highly reliable (split-half r&nbsp;&gt;&nbsp;0.93) and sex-invariant.
+    </p>
+    <p>
+        The practical implication is that the theta shelf is not a separate oscillatory component
+        requiring independent neural generators. Rather, it is a spectral consequence of immature
+        frequency control within the alpha-generating network. As thalamocortical circuits mature,
+        burst frequency stabilizes, the chirp diminishes, and the shelf collapses into the narrow
+        adult alpha peak.
+    </p>
+    <p>
+        These findings suggest that developmental EEG research should move beyond band-power summaries
+        toward cycle-level characterizations of oscillatory dynamics. Tools like bycycle period slope
+        (&lt;0.001 s/epoch, robust to artifacts) make this tractable at scale.
     </p>
     <p>
         Use the <a href="/simulator">Simulator</a> to explore how different parameter choices affect

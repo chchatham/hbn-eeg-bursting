@@ -249,10 +249,13 @@ def run_miniset(data_dir=None, phenotypic_dir=None, n_per_release=20,
 
     subjects = discover_subjects(data_dir, condition)
     metadata = load_metadata(phenotypic_dir, condition)
+    meta_sids = set(metadata["subject_id"])
     meta_lookup = metadata.set_index("subject_id").to_dict("index")
 
-    print(f"Found {len(subjects)} subjects with {condition} epoch files")
-    print(f"Metadata available for {len(metadata)} subjects")
+    n_raw = len(subjects)
+    subjects = [s for s in subjects if s["subject_id"] in meta_sids]
+    print(f"Found {n_raw} epoch files, {len(subjects)} pass QC (in metadata_{condition}.csv)")
+    print(f"Excluded {n_raw - len(subjects)} subjects not in QC-filtered metadata")
 
     selected = _select_miniset_subjects(subjects, meta_lookup, n_per_release, rng)
     print(f"Selected {len(selected)} subjects for miniset")
@@ -351,6 +354,152 @@ def _select_miniset_subjects(subjects, meta_lookup, n_per_release, rng):
                 selected.append(pool[idx])
 
     return selected
+
+
+def run_full(data_dir=None, phenotypic_dir=None, condition="ec", methods=None,
+             output_dir=None, checkpoint_interval=50):
+    """Run burst analysis on ALL QC-filtered HBN subjects.
+
+    Reuses any existing checkpoint (including miniset results) to avoid
+    reprocessing. Saves incrementally every checkpoint_interval subjects.
+
+    Parameters
+    ----------
+    data_dir : Path, optional
+    phenotypic_dir : Path, optional
+    condition : str
+    methods : list of str, optional
+    output_dir : Path, optional
+        Where to save results. Defaults to results/hbn/.
+    checkpoint_interval : int
+        Save checkpoint every N subjects.
+
+    Returns
+    -------
+    results_df : DataFrame
+        Full subject-level results.
+    """
+    if output_dir is None:
+        output_dir = Path(__file__).resolve().parents[2] / "results" / "hbn"
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    checkpoint_path = output_dir / "fullscale_checkpoint.csv"
+    final_path = output_dir / "fullscale_results.csv"
+    error_log_path = output_dir / "fullscale_errors.log"
+
+    print("=" * 60)
+    print("HBN BURST ANALYSIS — FULL SCALE")
+    print("=" * 60)
+
+    subjects = discover_subjects(data_dir, condition)
+    metadata = load_metadata(phenotypic_dir, condition)
+    meta_sids = set(metadata["subject_id"])
+    meta_lookup = metadata.set_index("subject_id").to_dict("index")
+
+    n_raw = len(subjects)
+    subjects = [s for s in subjects if s["subject_id"] in meta_sids]
+    print(f"Found {n_raw} epoch files, {len(subjects)} pass QC")
+    print(f"Excluded {n_raw - len(subjects)} subjects not in QC-filtered metadata")
+
+    already_processed = set()
+    existing_rows = []
+
+    if checkpoint_path.exists():
+        existing_df = pd.read_csv(checkpoint_path)
+        already_processed = set(existing_df["subject_id"])
+        existing_rows = existing_df.to_dict("records")
+        print(f"Resuming from checkpoint: {len(already_processed)} subjects already done")
+    elif final_path.exists():
+        existing_df = pd.read_csv(final_path)
+        already_processed = set(existing_df["subject_id"])
+        existing_rows = existing_df.to_dict("records")
+        print(f"Resuming from final results: {len(already_processed)} subjects already done")
+    else:
+        miniset_path = output_dir / "miniset_full_results.csv"
+        if miniset_path.exists():
+            miniset_df = pd.read_csv(miniset_path)
+            already_processed = set(miniset_df["subject_id"])
+            existing_rows = miniset_df.to_dict("records")
+            print(f"Seeded from miniset: {len(already_processed)} subjects reused")
+
+    remaining = [s for s in subjects if s["subject_id"] not in already_processed]
+    print(f"Remaining to process: {len(remaining)}")
+    print(f"Estimated time: {len(remaining) * 5.1 / 60:.0f} minutes")
+    print()
+
+    all_results = list(existing_rows)
+    n_processed = 0
+    n_skipped = 0
+    n_failed = 0
+    new_since_checkpoint = 0
+
+    for subj in tqdm(remaining, desc="Processing subjects"):
+        sid = subj["subject_id"]
+        meta = meta_lookup.get(sid, {})
+        age = meta.get("age", np.nan)
+
+        if np.isnan(age):
+            n_skipped += 1
+            continue
+
+        try:
+            epochs = load_subject_epochs(subj["epoch_path"])
+            epoch_data, sfreq = select_posterior_data(epochs)
+
+            if epoch_data.shape[0] < MIN_EPOCHS_PER_SUBJECT:
+                n_skipped += 1
+                continue
+
+            results = run_subject_burst_analysis(epoch_data, sfreq, methods)
+
+            row = {
+                "subject_id": sid,
+                "release": subj["release"],
+                "age": age,
+                "sex": meta.get("sex", ""),
+                "age_bin": assign_age_bin(age) if not np.isnan(age) else None,
+                "n_epochs": epoch_data.shape[0],
+                "condition": condition,
+            }
+            for method_name, method_results in results.items():
+                for key, val in method_results.items():
+                    if not isinstance(val, list):
+                        row[f"{method_name}_{key}"] = val
+
+            all_results.append(row)
+            n_processed += 1
+            new_since_checkpoint += 1
+
+        except Exception as e:
+            n_failed += 1
+            with open(error_log_path, "a") as f:
+                f.write(f"{sid}\t{e}\n")
+            continue
+
+        if new_since_checkpoint >= checkpoint_interval:
+            _save_checkpoint(all_results, checkpoint_path)
+            new_since_checkpoint = 0
+
+    results_df = pd.DataFrame(all_results)
+    results_df.to_csv(final_path, index=False)
+    if checkpoint_path.exists():
+        checkpoint_path.unlink()
+
+    print()
+    print("=" * 60)
+    print(f"COMPLETE: {len(results_df)} total subjects in final results")
+    print(f"  New this run: {n_processed} processed, {n_skipped} skipped, {n_failed} failed")
+    print(f"  Reused from checkpoint/miniset: {len(already_processed)}")
+    print(f"Saved: {final_path}")
+    print("=" * 60)
+
+    return results_df
+
+
+def _save_checkpoint(rows, path):
+    """Write checkpoint CSV."""
+    pd.DataFrame(rows).to_csv(path, index=False)
 
 
 def save_results(results_df, output_dir, prefix="miniset"):
